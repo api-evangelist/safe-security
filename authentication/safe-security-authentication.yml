@@ -1,0 +1,77 @@
+generated: '2026-08-26'
+method: searched
+source: https://docs.safe.security/docs/accessing-safe-apis
+name: SAFE REST API authentication
+docs:
+- https://docs.safe.security/docs/accessing-safe-apis
+- https://docs.safe.security/docs/api-credentials
+note: >-
+  Derived from the published documentation rather than from a securitySchemes block:
+  SAFE's Swagger reference is served inside the authenticated application and its
+  spec JSON is not retrievable anonymously (see conformance/ evidence), so the auth
+  model below is transcribed from SAFE's own public docs pages.
+schemes:
+- id: basicAuth
+  type: http
+  scheme: basic
+  in: header
+  header: Authorization
+  purpose: bootstrap
+  description: >-
+    HTTP Basic with an API username and API password generated in the SAFE
+    application under Settings > API Credentials. Used only to call the token
+    endpoint; it is not accepted on resource endpoints.
+- id: bearerAuth
+  type: http
+  scheme: bearer
+  bearer_format: JWT-style access token
+  in: header
+  header: Authorization
+  purpose: resource-access
+  description: >-
+    The access token returned by POST /api/v3/auth, sent as
+    'Authorization: Bearer {{safe-bearer-token}}' on every subsequent call.
+token_endpoint:
+  operation: POST /api/v3/auth
+  request_auth: basicAuth
+  returns: accessToken
+  ttl: 1h
+  ttl_source: >-
+    "You can now use any of the SAFE APIs for the next hour. The access token will
+    expire, so it may be necessary to repeat this process." - Accessing SAFE APIs
+credential_management:
+  created_in: SAFE application UI, Settings > API Credentials
+  self_service: true
+  roles_permitted:
+  - Admin
+  shown_once: true
+  permissions: read/write
+  permission_granularity: none
+  expiry_configurable: true
+  expiry_options:
+  - 30 days
+  - 60 days
+  - 90 days
+  - 180 days
+  - 365 days
+  - custom 1-365 days
+  max_validity_setting: Settings > System Setup > Security
+  revocation: Delete the credential from Settings > API Credentials
+  note: >-
+    Per SAFE's own FAQ, "API keys are only available for the Admin role in SAFE...
+    These keys have both read/write permissions." There are no read-only API
+    credentials and no scope selection, so any integration holding a SAFE API
+    credential holds full read/write authority over the tenant. Lowering the
+    tenant-wide maximum validity retroactively shortens the expiry of credentials
+    already issued, and that shortening cannot be undone.
+oauth2: false
+openid_connect:
+  api: false
+  console: true
+  note: >-
+    OAuth 2.0 / OIDC is not used for API authentication. SSO to the SAFE application
+    itself is supported for human users via SAML/OIDC with Microsoft Entra ID, Okta,
+    AD FS, Duo and OneLogin (docs.safe.security/docs/generic-sso-parameters); it does
+    not apply to REST API credentials.
+mtls: false
+api_keys: true

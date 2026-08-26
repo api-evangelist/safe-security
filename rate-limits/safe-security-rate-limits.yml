@@ -1,0 +1,31 @@
+generated: '2026-08-26'
+method: searched
+source: https://docs.safe.security/docs/accessing-safe-apis
+name: SAFE REST API rate limits
+docs: https://docs.safe.security/docs/accessing-safe-apis
+limit_count: 1
+rate_limits:
+- scope: per-tenant
+  window: 1m
+  limit: 1200
+  burst: null
+  unit: requests
+  note: >-
+    Published verbatim in the Accessing SAFE APIs FAQ: "API requests are capped at
+    1200 requests/min." The docs do not say whether the cap is enforced per API
+    credential, per user or per tenant; it is recorded here at the level the docs
+    state it, which is the SAFE instance.
+response_headers:
+  documented: false
+  headers: []
+  note: >-
+    SAFE publishes no rate-limit response headers. No X-RateLimit-*, RateLimit-* or
+    Retry-After header is documented anywhere in the public documentation, and the
+    limit could not be observed live because every /api/v3 path requires
+    authentication (anonymous requests return 403 from the edge before reaching the
+    application). An agent therefore has no runtime signal for remaining quota and
+    must track the 1200/min budget client-side.
+exhaustion_status: null
+exhaustion_note: >-
+  The status code returned when the cap is exceeded is not documented and could not
+  be observed without credentials.

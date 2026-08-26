@@ -1,0 +1,145 @@
+generated: '2026-08-26'
+method: derived
+source: docs.safe.security/docs/how-to-use-safes-audit-apis + docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20 + github.com/Safe-Security/signal
+name: SAFE Security MCP server
+status: candidate
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: probed
+search_evidence:
+  note: >-
+    No SAFE-published MCP server was found. Four candidate endpoints were POSTed a
+    tools/list JSON-RPC request on 2026-08-26 and none answered as an MCP transport.
+    Neither published llms.txt index (safe.security/llms.txt, docs.safe.security/llms.txt)
+    mentions MCP, and the Safe-Security GitHub organization ships no MCP package. SAFE
+    markets agentic AI heavily (SafeX, SAFE AURA, CyberAGI) but those agents run inside
+    the SAFE application; nothing is exposed to an external MCP client.
+  probes:
+  - url: https://mcp.safe.security/mcp
+    status: null
+    note: DNS does not resolve
+  - url: https://us.safeone.ai/mcp
+    status: 405
+    note: CloudFront MethodNotAllowed XML - not an MCP transport
+  - url: https://safe.security/mcp
+    status: 301
+    note: WordPress redirect, no MCP handler
+  - url: https://docs.safe.security/mcp
+    status: 404
+    note: 'Document360 JSON 404: {"statusCode":404,"path":"/mcp"}'
+tools:
+- name: safe_auth
+  description: Exchange SAFE API Basic credentials for a one-hour bearer access token.
+  rest: POST /api/v3/auth
+  api: SAFE REST API
+  read_only: false
+  consequence: low
+- name: safe_list_users
+  description: List the users onboarded to the SAFE One tenant, with role, last login and the uuid the audit log references.
+  rest: GET /api/v3/users
+  api: SAFE REST API
+  read_only: true
+  consequence: low
+- name: safe_request_report
+  description: Queue a SAFE report or audit-log export; returns a uuid to poll.
+  rest: POST /api/v3/reports
+  api: SAFE REST API
+  read_only: false
+  consequence: low
+- name: safe_get_report
+  description: Retrieve a queued report by uuid as a pre-signed download URL valid for five minutes.
+  rest: GET /api/v3/reports/{uuid}
+  api: SAFE REST API
+  read_only: true
+  consequence: low
+- name: safe_export_audit_logs
+  description: Request an audit-log export covering a stated number of days; returns a uuid.
+  rest: POST /api/v3/audit-logs/export
+  api: SAFE REST API
+  read_only: false
+  consequence: low
+- name: safe_get_audit_log_export
+  description: Retrieve a completed audit-log export by uuid.
+  rest: GET /api/v3/audit-logs/export/{uuid}
+  api: SAFE REST API
+  read_only: true
+  consequence: low
+- name: safe_push_signal
+  description: Push a CA, VA, EDR or UBA security signal into SAFE using the open-source Signal specification.
+  rest: POST /api/v3/signals
+  api: SAFE REST API
+  read_only: false
+  consequence: medium
+- name: safe_push_signals_zip
+  description: Push a zipped batch of Signal documents into SAFE.
+  rest: POST /api/v3/signals/zip
+  api: SAFE REST API
+  read_only: false
+  consequence: medium
+- name: balbix_gen_token
+  description: Exchange Balbix Basic credentials plus a customer key for a 30-minute session authorization token.
+  rest: POST /apis/v1/gen_token
+  api: Balbix REST API
+  read_only: false
+  consequence: low
+- name: balbix_list_assets
+  description: Search Balbix assets by hostname, IP and/or MAC to resolve a Device ID.
+  rest: POST /apis/v1/bx-it/asset/asset_list
+  api: Balbix REST API
+  read_only: true
+  consequence: low
+- name: balbix_get_asset
+  description: Return all attributes for one Balbix asset by Device ID.
+  rest: GET /apis/v1/bx-it/asset/asset_details/{dev_id}
+  api: Balbix REST API
+  read_only: true
+  consequence: low
+- name: balbix_asset_vulns
+  description: Return vulnerabilities for one asset, with CVSS, exposure score and MITRE ATT&CK mapping.
+  rest: POST /apis/v1/bx-it/asset/vulns/{dev_id}
+  api: Balbix REST API
+  read_only: true
+  consequence: low
+- name: balbix_asset_misconfigs
+  description: Return misconfigurations detected on one asset.
+  rest: POST /apis/v1/bx-it/asset/misconfig_details/{dev_id}
+  api: Balbix REST API
+  read_only: true
+  consequence: low
+- name: balbix_app_details
+  description: Return application metadata - owner, business criticality, repository, URL - for one App ID.
+  rest: GET /apis/v1/bx-it/application/app_details/{app_id}
+  api: Balbix REST API
+  read_only: true
+  consequence: low
+- name: balbix_app_artifacts
+  description: Return repositories, projects, deployments and other artifacts for one application.
+  rest: POST /apis/v1/bx-it/application/artifacts/{app_id}
+  api: Balbix REST API
+  read_only: true
+  consequence: low
+- name: balbix_app_vulns
+  description: Return SAST/SCA vulnerabilities for one application.
+  rest: POST /apis/v1/bx-it/application/vulns/{app_id}
+  api: Balbix REST API
+  read_only: true
+  consequence: low
+- name: balbix_app_infra_assets
+  description: Return the infrastructure assets backing one application.
+  rest: POST /apis/v1/bx-it/application/infra-assets/{app_id}
+  api: Balbix REST API
+  read_only: true
+  consequence: low
+note: >-
+  This is a CANDIDATE tool surface derived from operations SAFE documents publicly, not a
+  server anybody ships. Every operation named above appears verbatim in SAFE's own public
+  documentation or in the MIT-licensed Safe-Security/signal repository, so no endpoint is
+  invented. Input schemas are only partially known: SAFE's authoritative Swagger reference
+  is served inside the authenticated application (User Profile > Help > SAFE API) and is
+  not retrievable anonymously, so parameters are recorded only where the docs spell them
+  out. Both APIs are per-tenant - a real server would have to take the tenant host
+  (us/eu/ap/au.safeone.ai, or a <tenant>.balbix.net host issued by Balbix) as configuration.

@@ -1,0 +1,89 @@
+generated: '2026-08-26'
+method: probed
+source: live HTTP probes of every SAFE Security host, 2026-08-26
+name: SAFE Security well-known documents
+note: >-
+  No /.well-known/ document is served by any SAFE Security host. Two 200 responses
+  were recorded and BOTH are false positives, not documents: safe.security is a
+  WordPress site whose catch-all answers /.well-known/security.txt with the HTML
+  homepage shell (text/html, 153KB), and the safeone.ai application hosts answer
+  every /.well-known/* path with a CloudFront/WAF AccessDenied XML body. Neither
+  is a well-known document, so no WellKnown or SecurityTxt pointer is emitted.
+  SAFE does publish a vulnerability-report contact, but on its Security Statement
+  page rather than at the RFC 9116 path - see
+  security/safe-security-vulnerability-disclosure.yml.
+hosts:
+- host: safe.security
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    file: null
+    note: HTML homepage shell returned by the WordPress catch-all - soft 404, not a document
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+- host: docs.safe.security
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+- host: us.safeone.ai
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+    file: null
+    note: CloudFront AccessDenied XML
+  - path: /.well-known/api-catalog
+    status: 403
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 403
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 403
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 403
+    file: null
+  - path: /.well-known/agent.json
+    status: 403
+    file: null
+- host: safeone.ai
+  documents:
+  - path: /.well-known/agent-card.json
+    status: null
+    file: null
+    note: '<no response> - apex safeone.ai did not answer on 443 within the probe deadline'

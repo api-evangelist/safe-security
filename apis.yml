@@ -1,23 +1,178 @@
 aid: safe-security
 name: SAFE Security
-description: 'SAFE Security is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'SAFE Security (SAFE, formerly Lucideus) is a Palo Alto based cyber risk
+  management company whose SAFE One platform quantifies cyber risk in financial terms
+  on the FAIR standard, unifying Cyber Risk Quantification (CRQ), Third-Party Risk
+  Management (TPRM), Continuous Threat Exposure Management (CTEM) and AI Security
+  Posture Management (AI-SPM). The platform is API-first: a versioned REST API at
+  /api/v3 on a per-tenant safeone.ai host lets customers pull users, assets, findings,
+  risk scenarios, reports and audit logs, and drive the 50+ product integrations
+  programmatically, while an open-source Signal specification (MIT, github.com/Safe-Security/signal)
+  defines the JSON contract for pushing CA, VA, EDR and UBA security signals into
+  SAFE from any tool. SAFE acquired RiskLens in 2023 and Balbix in 2025.'
+image: https://safe.security/wp-content/uploads/safe-social.jpg
 url: https://raw.githubusercontent.com/api-evangelist/safe-security/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-26'
 modified: '2026-08-26'
 tags:
 - Company
-apis: []
+- Security
+- Cyber Risk Quantification
+- Third-Party Risk Management
+- Continuous Threat Exposure Management
+- AI Security Posture Management
+- Risk Management
+- Governance Risk and Compliance
+- FAIR
+- Vulnerability Management
+apis:
+- name: SAFE REST API
+  description: 'The SAFE REST API (v3) gives customers and partners programmatic access
+    to the SAFE One platform: users, assets/technology, findings, risk scenarios,
+    reports, audit-log export, and full lifecycle management of the platform''s
+    product integrations. Authentication is a two-step exchange - HTTP Basic with an
+    API username/password generated in Settings > API Credentials, then POST /api/v3/auth
+    to mint a one-hour bearer access token. The API is served from the customer''s own
+    regional tenant host on safeone.ai; the Swagger reference is published inside the
+    authenticated application (User Profile > Help > SAFE API) and is not reachable
+    anonymously.'
+  humanURL: https://docs.safe.security/docs/accessing-safe-apis
+  baseURL: https://us.safeone.ai/api/v3
+  tags:
+  - Security
+  - Risk Management
+  - Cyber Risk Quantification
+  properties:
+  - type: Documentation
+    url: https://docs.safe.security/docs/accessing-safe-apis
+  - type: APIReference
+    url: https://docs.safe.security/docs/accessing-safe-apis
+  - type: Authentication
+    url: authentication/safe-security-authentication.yml
+  - type: RateLimits
+    url: rate-limits/safe-security-rate-limits.yml
+  - type: Conventions
+    url: conventions/safe-security-conventions.yml
+  - type: ErrorCatalog
+    url: errors/safe-security-problem-types.yml
+  - type: DataModel
+    url: data-model/safe-security-data-model.yml
+  - type: MCPServer
+    url: mcp/safe-security-mcp.yml
+  - type: Examples
+    url: examples/_index.yml
+  - type: Lifecycle
+    url: lifecycle/safe-security-lifecycle.yml
+- name: Balbix REST API
+  description: 'The Balbix REST API (v1) gives programmatic read access to the asset,
+    vulnerability, misconfiguration, software-inventory and application inventory Balbix
+    discovers - the Continuous Threat Exposure Management half of SAFE''s platform since
+    the 2025 acquisition. Assets are addressed by an integer Device ID resolved through
+    /asset_list from any combination of hostname, IP and MAC; applications by an App ID.
+    Responses carry CVSS scores, CVE and CWE identifiers, CPE strings, MITRE ATT&CK
+    tactic/technique pairs and a Balbix exposure score. Authentication is HTTP Basic plus a
+    customer key against /apis/v1/gen_token, which mints a 30-minute session token sent
+    bare in Authorization alongside a Client-API-Key tenant header - a different calling
+    convention from the SAFE One API. The API is explicitly read-only, is served from a
+    per-tenant *.balbix.net host issued by Balbix, and credentials can currently only be
+    created by Balbix engineering or customer success rather than self-service.'
+  humanURL: https://docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20
+  baseURL: https://{tenant}.balbix.net/apis/v1
+  tags:
+  - Security
+  - Continuous Threat Exposure Management
+  - Vulnerability Management
+  - Attack Surface Management
+  properties:
+  - type: Documentation
+    url: https://docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20
+  - type: APIReference
+    url: https://docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20
+  - type: Authentication
+    url: authentication/safe-security-authentication.yml
+  - type: Conventions
+    url: conventions/safe-security-conventions.yml
+  - type: ErrorCatalog
+    url: errors/safe-security-problem-types.yml
+  - type: DataModel
+    url: data-model/safe-security-data-model.yml
+  - type: ChangeLog
+    url: changelog/safe-security-changelog.yml
+  - type: RateLimits
+    url: rate-limits/safe-security-rate-limits.yml
+common:
+- type: Website
+  url: https://safe.security/
+- type: Documentation
+  url: https://docs.safe.security/
+- type: APIReference
+  url: https://docs.safe.security/docs/accessing-safe-apis
+- type: GettingStarted
+  url: https://github.com/Safe-Security/signal/blob/main/developer-guide.md
+- type: Support
+  url: https://docs.safe.security/docs/support-and-maintenance
+- type: Blog
+  url: https://safe.security/resources/blog/
+- type: BlogRSS
+  url: https://safe.security/feed/
+- type: GitHubOrganization
+  url: https://github.com/Safe-Security
+- type: SignUp
+  url: https://us.safeone.ai/
+- type: TermsOfService
+  url: https://safe.security/terms-of-service/
+- type: PrivacyPolicy
+  url: https://safe.security/privacy-policy/
+- type: Security
+  url: https://safe.security/security/
+- type: TrustCenter
+  url: security/safe-security-trust-center.yml
+- type: Compliance
+  url: conformance/safe-security-conformance.yml
+- type: Conformance
+  url: conformance/safe-security-conformance.yml
+- type: VulnerabilityDisclosure
+  url: security/safe-security-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/safe-security-domain-security.yml
+- type: LLMsTxt
+  url: llms/safe-security-llms.txt
+- type: Packages
+  url: packages/safe-security-packages.yml
+- type: SDKs
+  url: packages/safe-security-packages.yml
+- type: Lifecycle
+  url: lifecycle/safe-security-lifecycle.yml
+- type: StatusPage
+  url: lifecycle/safe-security-lifecycle.yml
+- type: ChangeLog
+  url: changelog/safe-security-changelog.yml
+- type: Plans
+  url: plans/safe-security-plans-pricing.yml
+- type: Examples
+  url: examples/_index.yml
+- type: Conventions
+  url: conventions/safe-security-conventions.yml
+- type: ErrorCatalog
+  url: errors/safe-security-problem-types.yml
+- type: DataModel
+  url: data-model/safe-security-data-model.yml
+- type: MCPServer
+  url: mcp/safe-security-mcp.yml
+- type: Authentication
+  url: authentication/safe-security-authentication.yml
+- type: RateLimits
+  url: rate-limits/safe-security-rate-limits.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
-common:
-- type: Website
-  url: https://forgeglobal.com/safe-security_stock/
+x-enrichment:
+  date: '2026-08-26'
+  status: enriched
+  artifacts_added: 19
+  pass: local-v1

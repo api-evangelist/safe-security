@@ -1,0 +1,135 @@
+generated: '2026-08-26'
+method: searched
+source: https://docs.safe.security/docs/how-to-use-safes-audit-apis + https://docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20
+name: SAFE Security error catalog
+docs:
+- https://docs.safe.security/docs/how-to-use-safes-audit-apis
+- https://docs.safe.security/docs/accessing-safe-apis
+format: proprietary
+rfc9457: false
+note: >-
+  SAFE publishes no error reference page and no error-code registry. The entries below are
+  the complete set of error responses documented anywhere on SAFE's public surface: they
+  come from the response tables in "How to use SAFE's Audit APIs", which is the only public
+  page that documents responses at all. Every status/body pair is quoted verbatim from that
+  page. The authoritative catalog would be SAFE's Swagger reference, which is served inside
+  the authenticated application and is not retrievable anonymously, so this is a floor and
+  not a ceiling. No RFC 9457 application/problem+json is used, no machine-readable error
+  code exists on any surface, and the envelope is inconsistent between operations - see
+  conventions/safe-security-conventions.yml.
+envelope_variants: 4
+problem_types:
+- name: unauthorized-invalid-header
+  status: 401
+  title: UNAUTHORIZED
+  media_type: application/json
+  envelope: '{"status": "error", "message": "invalid authorization header!"}'
+  fields: [status, message]
+  code: null
+  operations:
+  - GET /api/v3/users
+  cause: >-
+    The Authorization header is missing, malformed, or does not carry a Bearer access
+    token minted by POST /api/v3/auth.
+  remediation: >-
+    Re-run the two-step exchange - HTTP Basic against POST /api/v3/auth to mint a fresh
+    accessToken, then send it as 'Authorization: Bearer {accessToken}'. Tokens live one
+    hour, so a long-running agent must refresh proactively.
+  retryable: false
+  source: https://docs.safe.security/docs/how-to-use-safes-audit-apis
+- name: unauthorized
+  status: 401
+  title: UNAUTHORIZED
+  media_type: application/json
+  envelope: '{"message": "Unauthorized"}'
+  fields: [message]
+  code: null
+  operations:
+  - POST /api/v3/reports
+  cause: The bearer access token is absent, expired or rejected.
+  remediation: Mint a new access token via POST /api/v3/auth and retry.
+  retryable: false
+  note: >-
+    A DIFFERENT envelope from the 401 on GET /api/v3/users for the same underlying
+    condition - bare `message`, no `status` key.
+  source: https://docs.safe.security/docs/how-to-use-safes-audit-apis
+- name: forbidden-explicit-deny
+  status: 403
+  title: FORBIDDEN
+  media_type: application/json
+  envelope: '{"Message": "User is not authorized to access this resource with an explicit deny"}'
+  fields: [Message]
+  code: null
+  operations:
+  - GET /api/v3/users
+  - any /api/v3/* path called anonymously
+  cause: >-
+    The AWS API Gateway authorizer in front of SAFE denied the request before it reached
+    the application - no credential presented, or a credential without rights to the path.
+  remediation: >-
+    Present a valid bearer token. If the token is valid, the credential's tenant does not
+    have access to that resource; SAFE API credentials are Admin-role only and carry
+    read/write, so a persistent 403 usually means the wrong tenant host.
+  retryable: false
+  observed_live: true
+  observed_note: >-
+    Confirmed by anonymous probe on 2026-08-26 - https://us.safeone.ai/api/v3/openapi.json
+    returned exactly this body with HTTP 403. Note the capital M in `Message`: this is the
+    API Gateway envelope, not SAFE's own.
+  source: https://docs.safe.security/docs/how-to-use-safes-audit-apis
+- name: report-not-found
+  status: 400
+  title: Bad Request
+  media_type: application/json
+  envelope: '{"success": false, "message": "Report not found for report id:{uuid}"}'
+  fields: [success, message]
+  code: null
+  operations:
+  - GET /api/v3/reports/{uuid}
+  - GET /api/v3/audit-logs/export/{uuid}
+  cause: >-
+    The uuid does not correspond to a report in this tenant, or the report has not
+    finished generating yet.
+  remediation: >-
+    Verify the uuid returned by the queuing POST. SAFE returns 400 rather than 404 for a
+    missing report and publishes no distinct "still processing" status, so an agent
+    cannot tell "not ready yet" from "never existed" and must poll with backoff.
+  retryable: true
+  source: https://docs.safe.security/docs/how-to-use-safes-audit-apis
+- name: balbix-session-exhausted
+  status: null
+  title: Concurrency limit reached
+  media_type: null
+  envelope: null
+  fields: []
+  code: null
+  operations:
+  - any /apis/v1/bx-it/* path
+  cause: >-
+    More than four concurrent Balbix API sessions per customer. "Although there are no
+    hard-coded rate limits, the API only supports 4 concurrent sessions per customer;
+    new sessions will be processed once previous requests have been handled."
+  remediation: Serialise calls to at most four in flight per tenant.
+  retryable: true
+  documented_status: false
+  note: >-
+    Balbix documents the CONDITION but neither the status code nor the body returned when
+    it is hit. Behaviour reads as queueing rather than rejection, so the practical symptom
+    an agent sees is latency, not an error.
+  source: https://docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20
+undocumented:
+- condition: rate-limit exhaustion (SAFE One, 1200 req/min)
+  note: >-
+    The status code and body returned when the published 1200 requests/min cap is
+    exceeded are not documented and could not be observed without credentials.
+- condition: Signal ingestion validation failure
+  note: >-
+    POST /api/v3/signals rejects malformed Signal documents, but neither the SAFE docs nor
+    the MIT-licensed Safe-Security/signal repository publishes the validation error shape.
+    The repository's SignalResponse model exists but its failure fields are not documented.
+- condition: 5xx
+  note: No server-error response is documented on any public SAFE or Balbix page.
+gaps_for_provider:
+- No error-code registry exists on either surface; errors carry human prose only.
+- Four different JSON error envelopes are published across three operations.
+- 400 is used where 404 is meant (missing report), and there is no distinct in-progress status.

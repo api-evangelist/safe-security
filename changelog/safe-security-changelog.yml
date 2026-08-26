@@ -1,0 +1,91 @@
+generated: '2026-08-26'
+method: searched
+source: https://docs.safe.security/balbixhelp/docs/release-notes-june-2026 + https://docs.safe.security/llms.txt
+name: SAFE Security change log
+docs: https://docs.safe.security/llms.txt
+scheme: dated release notes (product), no API change log
+current_version:
+  safe_one_api: v3
+  balbix_api: v1
+coverage: partial
+note: >-
+  SAFE publishes NO change log for either API. What it does publish is dated PRODUCT
+  release notes, and only for the Balbix side of the platform - the five entries below are
+  the complete set indexed in docs.safe.security/llms.txt, all under the /balbixhelp/
+  space. SAFE One's own product updates are delivered in-app through the SAFE agent's
+  "What's New" channel and never reach a public URL, which means there is no anonymous way
+  to learn that a SAFE One API changed. None of the entries below announces an API change:
+  they cover threat-intelligence sourcing, a ticketing integration and an endpoint-agent
+  detection improvement. An agent integrating against /api/v3 or /apis/v1 has no published
+  signal for breaking changes.
+provenance:
+  balbix_note: >-
+    The Balbix release notes are served from SAFE's own documentation host under
+    docs.safe.security/balbixhelp/ because SAFE acquired Balbix in 2025 and folded its
+    documentation into the SAFE docs site; the June 2026 entry names both platforms in one
+    sentence ("added to our SAFE and Balbix platforms"), confirming shared ownership.
+entries:
+- version: null
+  date: '2026-06-01'
+  title: VulnCheck replaces Recorded Future as the threat intelligence feed
+  url: https://docs.safe.security/balbixhelp/docs/release-notes-june-2026
+  scope: SAFE and Balbix platforms
+  breaking: false
+  data_affecting: true
+  highlights:
+  - Recorded Future is switched off; vulnerability and exploit intelligence migrates to VulnCheck, active from 1 June 2026.
+  - 'New/changed CVE tag values may appear: CISA Known Exploit, Exploit Kit Available, Known Exploit, Malware Linked, OWASP Top 10, Ransomware Linked.'
+  - Exposure Score and severity may shift - approximately 1-5 points out of 100 for a CVE that already carried tags, and 1-20 for one that did not.
+  consumer_impact: >-
+    A consumer that thresholds on exposure_score or on tag membership will see silent
+    movement on the cutover date. This is the closest thing to a breaking-change notice
+    SAFE published in the window, and it was announced with a dated cutover and a
+    quantified impact range - the right shape, on the wrong surface for an API consumer.
+- version: null
+  date: '2025-08'
+  title: ServiceNow ITSM ticketing integration via the Balbix D3 Connector
+  url: https://docs.safe.security/balbixhelp/docs/release-notes-august-2025
+  scope: Balbix
+  breaking: false
+  highlights:
+  - Creates ServiceNow Incident tickets from Balbix vulnerability insights, at the Incident level.
+  - Template-first model mapped to the ServiceNow catalog hierarchy, with field-level visibility toggles and default values.
+  - Supports single-asset and asset-group tickets with remediation instructions inlined.
+- version: null
+  date: '2025-05-23'
+  title: Enhanced detection of embedded software libraries via InstallLocation scanning
+  url: https://docs.safe.security/balbixhelp/docs/release-notes-may-2025
+  scope: Balbix Windows Host Analyzer
+  breaking: false
+  data_affecting: true
+  highlights:
+  - Host Analyzer now scans the InstallLocation directory of installed applications for .exe and .dll files and reads embedded ProductName/ProductVersion metadata.
+  - Surfaces bundled libraries such as OpenSSL inside Apache, PHP and developer tooling that are absent from the Windows registry.
+  - Broadens software-inventory and vulnerability coverage without additional endpoint load.
+- version: null
+  date: '2025-04'
+  title: Release Notes - April 2025
+  url: https://docs.safe.security/balbixhelp/docs/release-notes-1
+  scope: Balbix
+  breaking: false
+- version: null
+  date: '2025-03'
+  title: Release Notes - March 2025 (ServiceNow connector upgrade)
+  url: https://docs.safe.security/balbixhelp/docs/servicenow-connector-upgrade
+  scope: Balbix
+  breaking: false
+package_changelogs:
+- package: signal-safe-security
+  url: https://github.com/Safe-Security/signal/blob/main/nodejs/CHANGELOG.md
+  registry: npm
+  latest_version: 1.17.0
+  latest_published: '2025-11-14'
+  note: >-
+    The only semver-versioned, machine-readable change history SAFE publishes. It tracks
+    the Signal specification's Node.js type definitions - 23 releases since 2022-11-09 -
+    not the REST API.
+gaps_for_provider:
+- No API change log on either surface; version bumps are visible only as a path segment.
+- SAFE One product updates are in-app only and have no public URL, so they cannot be watched, subscribed to or diffed.
+- Release notes carry no version identifier, only a month.
+- No RSS/Atom feed for release notes (the status page has one; the release notes do not).

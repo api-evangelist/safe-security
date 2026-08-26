@@ -1,0 +1,23 @@
+generated: '2026-08-26'
+method: searched
+source: https://safe.security/
+name: SAFE Security plans and pricing
+plan_count: 0
+plans: []
+note: >-
+  SAFE Security publishes no pricing. https://safe.security/pricing/ returns 404,
+  there is no pricing entry in either published llms.txt index (the marketing index
+  at safe.security/llms.txt or the documentation index at docs.safe.security/llms.txt),
+  and every commercial call to action on the site routes to a sales conversation at
+  https://safe.security/schedule-demo/ or https://safe.security/contact-us/. This is
+  an enterprise contact-sales motion: there is no self-serve tier, no published list
+  price, no free trial and no machine-readable plan catalog. API access is not sold
+  separately - it comes with a SAFE One tenant, and API credentials are created inside
+  the application by an Admin.
+evidence:
+- url: https://safe.security/pricing/
+  status: 404
+- url: https://safe.security/schedule-demo/
+  status: 200
+- url: https://safe.security/contact-us/
+  status: 200

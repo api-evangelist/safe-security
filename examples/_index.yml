@@ -1,0 +1,54 @@
+generated: '2026-08-26'
+method: searched
+source: https://github.com/Safe-Security/signal/tree/main/examples/samples
+name: SAFE Security request examples
+note: >-
+  Eight complete, first-party request payloads for the SAFE Signal specification, harvested
+  verbatim from the MIT-licensed Safe-Security/signal repository. These are the only
+  machine-readable request examples SAFE publishes anonymously - the Swagger reference that
+  would carry the rest is served inside the authenticated application. Each assessment type
+  ships in two grades: `simple` is the minimum viable document, `high-quality` exercises the
+  full vocabulary (CVSS vector, CVE mapping, ATT&CK techniques, CPE, remediation, entity
+  criticality) and is what SAFE's own signal-quality scoring rewards. They are the payload
+  for POST /api/v3/signals.
+license: MIT
+operation: POST /api/v3/signals
+examples:
+- file: safe-security-signal-simple-ca-signal.json
+  type: ca
+  grade: simple
+  description: Configuration Assessment signal, minimum fields.
+- file: safe-security-signal-high-quality-ca-signal.json
+  type: ca
+  grade: high-quality
+  description: Configuration Assessment signal exercising the full vocabulary.
+- file: safe-security-signal-simple-va-signal.json
+  type: va
+  grade: simple
+  description: Vulnerability Assessment signal, minimum fields.
+- file: safe-security-signal-high-quality-va-signal.json
+  type: va
+  grade: high-quality
+  description: Vulnerability Assessment signal with CVSS 3.1 vector, CVE mapping, three ATT&CK techniques, CPE 2.3 and remediation.
+- file: safe-security-signal-simple-edr-signal.json
+  type: edr
+  grade: simple
+  description: Endpoint Detection and Response signal, minimum fields.
+- file: safe-security-signal-high-quality-edr-signal.json
+  type: edr
+  grade: high-quality
+  description: Endpoint Detection and Response signal exercising the full vocabulary.
+- file: safe-security-signal-simple-uba-signal.json
+  type: uba
+  grade: simple
+  description: User Behaviour Analytics signal, minimum fields.
+- file: safe-security-signal-high-quality-uba-signal.json
+  type: uba
+  grade: high-quality
+  description: User Behaviour Analytics signal exercising the full vocabulary.
+not_covered:
+  note: >-
+    No published example exists for any READ operation. GET /api/v3/users, POST/GET
+    /api/v3/reports and the audit-log export endpoints have response examples embedded in
+    the Audit APIs docs page but are not published as files; the Balbix surface has cURL
+    and response examples in its guide but likewise ships no example files.

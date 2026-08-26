@@ -1,0 +1,119 @@
+generated: '2026-08-26'
+method: searched
+source: https://docs.safe.security/docs/support-and-maintenance + https://status.safeone.ai/ + https://docs.safe.security/docs/accessing-safe-apis
+name: SAFE Security API lifecycle
+docs:
+- https://docs.safe.security/docs/support-and-maintenance
+- https://docs.safe.security/docs/accessing-safe-apis
+versioning:
+  scheme: uri-path
+  current_versions:
+    safe_one: v3
+    balbix: v1
+  example: /api/v3/assets
+  policy_published: false
+  source: 'Accessing SAFE APIs FAQ: "The API versioning is done using versions API endpoints for, e.g., /api/v3/assets."'
+  note: >-
+    SAFE states HOW it versions but publishes no version POLICY - no support window for a
+    retired major, no notice period, no migration guide, and no record of v1 or v2. The
+    Balbix guide says its API "is under active development, with many new endpoints and
+    query parameters planned", which is a forward-compatibility warning without a
+    compatibility contract.
+deprecation:
+  policy_published: false
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  note: >-
+    No deprecation policy, no RFC 8594 Sunset or Deprecation response header, and no
+    deprecated-operation list is published on any public SAFE or Balbix page. The one
+    lifecycle change SAFE did announce in the window reviewed - retiring Recorded Future
+    as the threat-intel feed in favour of VulnCheck from 1 June 2026 - was announced in
+    release notes with a dated cutover, which is the right shape but is a data-source
+    change rather than an API deprecation.
+  evidence:
+  - url: https://docs.safe.security/balbixhelp/docs/release-notes-june-2026
+    status: 200
+status_page:
+  url: https://status.safeone.ai/
+  published: true
+  verified: probed
+  http_status: 200
+  title: SAFE Status
+  current_state: 'We are fully operational'
+  components:
+  - ap.safeone.ai
+  - au.safeone.ai
+  - eu.safeone.ai
+  - us.safeone.ai
+  - demo.safeone.io
+  uptime_reported: 100% across all five components over the May-Aug 2026 window shown
+  history_window: 90 days
+  scheduled_maintenance_published: true
+  subscribe_channels:
+  - email
+  - RSS/Atom
+  - Slack
+  incident_reporting: 'Report a problem form'
+  note: >-
+    A real, live, per-region status page - and the only place SAFE publishes the full list
+    of tenant hosts, which is operationally useful because both APIs are per-tenant and
+    the base URL differs by region. It is linked from the Support and Maintenance docs
+    page but was NOT linked from apis.yml before this pass.
+  source: https://docs.safe.security/docs/support-and-maintenance
+maintenance_windows:
+  published: true
+  source: https://docs.safe.security/docs/support-and-maintenance
+  windows:
+  - region: APAC
+    day: Thursday
+    utc: 13:00-18:00
+  - region: EMEA
+    day: Friday
+    utc: 01:00-06:00
+  - region: North America
+    day: Friday
+    utc: 06:00-11:00
+  ad_hoc: true
+  ad_hoc_note: >-
+    "In addition to these windows, we perform ad-hoc maintenance as required in line with
+    our continuous delivery methodology." Downtime-causing maintenance is announced in
+    advance on the status page.
+sla:
+  published: false
+  url: null
+  note: >-
+    No public SLA. https://safe.security/sla/ returns 404 and no uptime or response-time
+    commitment appears anywhere on the public site or docs; the status page reports
+    observed uptime but makes no promise. SAFE's Terms of Service (SAFE Enterprise) is
+    the governing commercial document and is not a published SLA.
+  evidence:
+  - url: https://safe.security/sla/
+    status: 404
+support:
+  channel: Jira Service Desk (Customer Portal)
+  url: https://safe-security.atlassian.net/servicedesk/customer/portal/11
+  public: false
+  note: >-
+    Support is customer-only: "To access the Customer Portal, you must be a registered
+    user". New users are onboarded by a Sales rep or Customer Success Manager. There is no
+    public developer forum, no community Slack and no public issue tracker for the API.
+    The Safe-Security/signal GitHub repository accepts issues and is the only public
+    channel touching the API contract.
+  guide: https://docs.safe.security/docs/service-desk-user-guide
+release_communication:
+  changelog_published: partial
+  see: changelog/safe-security-changelog.yml
+  in_app: 'SAFE agent, "What''s New" channel (bottom right of the application)'
+  note: >-
+    SAFE One product updates are delivered in-app through the SAFE agent rather than to a
+    public URL. Dated public release notes exist only for the Balbix side of the platform.
+data_residency:
+  configurable: true
+  url: https://docs.safe.security/docs/data-residency-in-safe
+  note: >-
+    Tenants select an AWS region at signup, and that choice determines the API base host -
+    which is why apis.yml records us.safeone.ai as one instance of a per-region pattern
+    rather than a single global base URL.

@@ -1,0 +1,222 @@
+generated: '2026-08-26'
+method: derived
+source: examples/safe-security-signal-*.json + https://docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20 + https://docs.safe.security/docs/how-to-use-safes-audit-apis
+name: SAFE Security data model
+note: >-
+  Derived from real payloads rather than from a spec: SAFE's Swagger reference is not
+  anonymously retrievable, so the entity graph below is reconstructed from (a) the eight
+  MIT-licensed Signal example documents harvested into examples/, (b) the verbatim
+  response bodies published in the Balbix REST API Guide, and (c) the GET /api/v3/users
+  response schema published in the Audit APIs page. Field names are quoted exactly as they
+  appear in those payloads. Coverage is partial by construction - the platform's marquee
+  objects (risk scenarios, findings, controls, groups, questionnaires, third parties) are
+  documented as UI concepts and are reachable over the API, but SAFE publishes no anonymous
+  payload for them, so they are listed as known-but-unmodelled rather than guessed at.
+surfaces:
+- api: SAFE REST API
+  base: https://{region}.safeone.ai/api/v3
+  modelled_from: published response schemas + Signal specification
+- api: Balbix REST API
+  base: https://{tenant}.balbix.net/apis/v1
+  modelled_from: published response bodies in the Balbix REST API Guide
+id_conventions:
+- entity: SAFE user
+  fields: [peopleId, uuid]
+  form: peopleId is an integer surrogate key; uuid is the cross-SAFE identifier and is the
+    key the audit log uses to reference a user
+- entity: SAFE report / audit export
+  fields: [uuid]
+  form: RFC 4122 UUID, e.g. 1eebc0b2-b019-42b3-8132-c15c5926b21e
+- entity: Signal
+  fields: [id]
+  form: caller-supplied UUID, e.g. 09d34300-4c54-4e5e-9050-fff5d912cb19
+- entity: Balbix asset
+  fields: [dev_id, device_guid, unique_identifier]
+  form: dev_id is an integer Device ID; device_guid is a UUID
+- entity: Balbix application
+  fields: [app_id, application_id]
+  form: app_id is an integer; application_id is a string label, e.g. APP1234
+- entity: Balbix vulnerability instance
+  fields: [id, component_instance_id, vuln_tracking_id]
+  form: UUID v5-shaped, e.g. 123f280f-3e66-5288-b53c-95dce2f9a1f3
+entities:
+- name: Signal
+  api: SAFE REST API
+  description: >-
+    The unit of security evidence pushed into SAFE. Open-source, MIT, versioned
+    independently of the REST API (version "1.0" in the payload).
+  fields: [version, id, name, description, firstSeen, createdAt, source, entity, securityContext, tags]
+  source: examples/safe-security-signal-high-quality-va-signal.json
+- name: SignalSource
+  api: SAFE REST API
+  description: Identifies the submitting connector and how often it re-submits.
+  fields: [name, nextSubmissionIntervalInMins]
+- name: Entity
+  api: SAFE REST API
+  description: The thing the signal is about - a machine, a person, an application.
+  fields: [type, name, entityAttributes]
+  type_values: [machine, user, application]
+- name: EntityAttributes
+  api: SAFE REST API
+  fields: [criticality, confidentialityRequirement, integrityRequirement, availabilityRequirement, tags]
+  note: The C/I/A requirement triple is the FAIR/CVSS environmental input.
+- name: SecurityContext
+  api: SAFE REST API
+  description: What the signal asserts - assessment type, status, severity, mappings, remediation.
+  fields: [type, status, severity, standardsMapping, attackPattern, controlType, description, remediation, tags]
+  type_values: [ca, va, edr, uba]
+- name: Severity
+  api: SAFE REST API
+  fields: [type, value, cvss]
+- name: Cvss
+  api: SAFE REST API
+  fields: [version, baseScore, vector]
+  note: 'Real CVSS 3.1 vector strings, e.g. CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H'
+- name: StandardMapping
+  api: SAFE REST API
+  fields: [name, value]
+  note: 'name is the standard, value the identifier - e.g. name "cve", value "CVE-2022-35411".'
+- name: AttackPattern
+  api: SAFE REST API
+  fields: [name, sourceName, mapping]
+  note: 'sourceName "ATT&CK"; mapping carries techniqueName + techniqueId, e.g. T1586.'
+- name: Remediation
+  api: SAFE REST API
+  fields: [description, reference, impact]
+- name: User
+  api: SAFE REST API
+  description: A person onboarded to the SAFE One tenant.
+  fields: [peopleId, emailId, firstName, lastName, uuid, updatedAt, lastLoginTime, role, authenticationType]
+  authentication_type_values: [Native, SSO]
+  source: https://docs.safe.security/docs/how-to-use-safes-audit-apis
+- name: Report
+  api: SAFE REST API
+  description: An asynchronous export job. Request carries type/format/reportMeta; the response carries a uuid, then a pre-signed URL.
+  fields: [uuid, type, format, reportMeta, preSignedUrl]
+  type_values: [AUDIT_LOGS]
+  format_values: [csv]
+- name: AuditLogEntry
+  api: SAFE REST API
+  description: One recorded action, delivered as JSON (or CSV via the report export) and optionally streamed to AWS CloudWatch for BYOA customers.
+  fields: [timestamp, sourceIp, sourcePort, username, userId, action]
+  note: >-
+    The audit log references users by uuid only, which is why GET /api/v3/users must be
+    called alongside it to resolve a name - SAFE says so explicitly.
+- name: Asset
+  api: Balbix REST API
+  description: A device Balbix has discovered.
+  fields: [dev_id, device_guid, host_name, ip, mac, agent_type, device_type, device_subtype, device_zone, device_roles, device_tags, groups, operatingsystem, os_name, os_vendor, os_version, os_arch, serial_number, site_name, system_manufacturer, system_model, smbios_version, total_physical_mem_mb, interfaces, impact, likelihood, created_at, data_observers, final_name, unique_identifier]
+- name: Vulnerability
+  api: Balbix REST API
+  description: A vulnerability instance on an asset.
+  fields: [id, dev_id, vuln_name, vuln_type, vuln_tags, vuln_published_date, vuln_first_detected_at, vuln_instance_state, vuln_instance_details, vuln_instance_detection_method, vuln_instance_created_at, vuln_instance_mitigated_at, vuln_tracking_id, cve_id, cvss_score, cvss_severity, cwe_id, cpe, exposure_score, exposure_severity, attck, mitre_attck_id, component_name, component_version, component_state, component_type, component_instance_id, component_tracking_id, consolidated_components, consolidated_vulns, data_sources, description, first_seen, fixes, balbix_device_type, balbix_device_subtype, created_at]
+  exposure_severity_values: [HIGH]
+  component_state_values: [UNPATCHED]
+- name: Misconfiguration
+  api: Balbix REST API
+  description: A configuration finding on an asset, retrieved by Device ID.
+  fields: [dev_id]
+  note: Endpoint documented (/asset/misconfig_details/{dev_id}) but its response body is truncated in the published guide.
+- name: SoftwareInventory
+  api: Balbix REST API
+  description: Installed software detected on an asset.
+  fields: [dev_id]
+  note: Endpoint named in the guide's list of four Device-ID endpoints; response body not published.
+- name: Application
+  api: Balbix REST API
+  fields: [app_id, application_id, name, alias, application_owner, business_owner, business_criticality, infrastructure, repository, repository_type, url, data_sources]
+- name: ApplicationArtifact
+  api: Balbix REST API
+  description: A repository, project or deployment associated with an application.
+  fields: [name, app_id, tags, dataSources, repository, repository_type, maxExposure]
+  data_source_values: [SAST, SCA]
+- name: ApplicationVulnerability
+  api: Balbix REST API
+  fields: [id, app_id, assessment_type, component_id, component_name, component_type, component_version, component_page_name, component_page_path, cve_severity, cvss_score, cvss_severity, cwe_id, cwe_ids, data_sources, first_seen, fixes, name, projects, project_names, url, vm_owner, vuln_name, vuln_type, vuln_description, vuln_details, vuln_tags, created_at]
+  assessment_type_values: [SCA, SAST]
+  component_type_values: [DEPENDENCY]
+relationships:
+- from: Signal
+  to: Entity
+  type: has_one
+  via: entity
+- from: Signal
+  to: SignalSource
+  type: has_one
+  via: source
+- from: Signal
+  to: SecurityContext
+  type: has_one
+  via: securityContext
+- from: Entity
+  to: EntityAttributes
+  type: has_one
+  via: entityAttributes
+- from: SecurityContext
+  to: Severity
+  type: has_one
+  via: severity
+- from: Severity
+  to: Cvss
+  type: has_one
+  via: cvss
+- from: SecurityContext
+  to: StandardMapping
+  type: has_many
+  via: standardsMapping
+- from: SecurityContext
+  to: AttackPattern
+  type: has_many
+  via: attackPattern
+- from: SecurityContext
+  to: Remediation
+  type: has_one
+  via: remediation
+- from: AuditLogEntry
+  to: User
+  type: belongs_to
+  via: uuid
+  note: The only cross-object join SAFE documents explicitly.
+- from: Report
+  to: AuditLogEntry
+  type: has_many
+  via: reportMeta.days
+- from: Vulnerability
+  to: Asset
+  type: belongs_to
+  via: dev_id
+- from: Misconfiguration
+  to: Asset
+  type: belongs_to
+  via: dev_id
+- from: SoftwareInventory
+  to: Asset
+  type: belongs_to
+  via: dev_id
+- from: Application
+  to: Asset
+  type: has_many
+  via: infrastructure[].dev_id
+- from: ApplicationArtifact
+  to: Application
+  type: belongs_to
+  via: app_id
+- from: ApplicationVulnerability
+  to: Application
+  type: belongs_to
+  via: app_id
+known_unmodelled:
+- name: Risk Scenario
+  reason: Documented as a first-class SAFE object with components, what-if analysis and change history, but no anonymous payload is published.
+- name: Finding
+  reason: Finding Center is a documented product area; no public response schema.
+- name: Control
+  reason: Control Center and FAIR-CAM controls are documented; no public response schema.
+- name: Group
+  reason: Documented object with create/update/delete recorded in the audit log; no public schema.
+- name: Third Party / Vendor
+  reason: The TPRM object model is central to the product but entirely undocumented publicly.
+- name: Questionnaire
+  reason: NIST CSF and FIQ questionnaires are documented as uploads; no public schema.
+- name: Technology (Asset)
+  reason: /api/v3/assets is named in the versioning FAQ but its schema is not published.

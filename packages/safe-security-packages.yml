@@ -1,0 +1,58 @@
+generated: '2026-08-26'
+method: searched
+source: https://registry.npmjs.org/signal-safe-security + https://github.com/Safe-Security/signal
+name: SAFE Security packages and SDKs
+note: >-
+  SAFE publishes no general-purpose REST client SDK for the SAFE One /api/v3 surface.
+  What it does publish, first-party and open source, is the Signal specification -
+  the JSON contract for pushing CA / VA / EDR / UBA security signals into SAFE - with
+  type definitions and runnable connector sample applications in four languages. Only
+  the Node.js package is distributed through a registry; the Python, C# and Java
+  implementations are source-only inside the same MIT-licensed GitHub repository and
+  therefore have no registry metadata endpoint to read a version from.
+packages:
+- name: signal-safe-security
+  registry: npm
+  url: https://www.npmjs.com/package/signal-safe-security
+  language: TypeScript
+  official: true
+  version: 1.17.0
+  published: '2025-11-14'
+  license: MIT
+  description: >-
+    Type definitions of the common objects used in the SAFE Signal specification -
+    Signal, Entity, Evidence, Severity, Cvss, AttackPattern, KillChainPhase,
+    StandardMapping, Remediation - plus helpers for scoring signal quality.
+  note: 23 published versions; first published 2022-11-09, latest 1.17.0 on 2025-11-14.
+- name: signal (python)
+  registry: source
+  url: https://github.com/Safe-Security/signal/tree/main/python
+  language: Python
+  official: true
+  version: null
+  published: null
+  note: >-
+    Source-only reference connector shipped in the Signal repository (app/dataclass/signal.py
+    plus requirements.txt). Not published to PyPI - pypi.org/pypi/safe-security/json and
+    pypi.org/pypi/signal-safe-security/json both return 404 - so there is no registry
+    version or release date to record.
+- name: Signals.Library (C#)
+  registry: source
+  url: https://github.com/Safe-Security/signal/tree/main/csharp
+  language: C#
+  official: true
+  version: null
+  published: null
+  note: >-
+    Source-only .NET class library and sample app in the Signal repository. Not published
+    to NuGet, so no registry version or release date exists.
+- name: signal (java)
+  registry: source
+  url: https://github.com/Safe-Security/signal/tree/main/java
+  language: Java
+  official: true
+  version: null
+  published: null
+  note: >-
+    Placeholder only - java/README.md in the Signal repository reads "Coming soon..".
+    Nothing is published to Maven Central.

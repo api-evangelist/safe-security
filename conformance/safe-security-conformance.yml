@@ -1,0 +1,189 @@
+generated: '2026-08-26'
+method: searched
+source: https://safe.security/security/ + examples/safe-security-signal-*.json + https://docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20
+name: SAFE Security conformance and standards
+docs:
+- https://safe.security/security/
+- https://github.com/Safe-Security/signal
+note: >-
+  Two kinds of claim are separated here. `standards[]` records what SAFE's CONTRACT
+  declares - identifier schemes and vocabularies that appear inside the Signal
+  specification's own payloads and inside Balbix's own published response bodies, with
+  the exact field that carries them. `compliance[]` records the organisational
+  certifications SAFE publishes on its Security Statement. The first is what an
+  integrating agent can rely on; the second is what a procurement team can rely on. Both
+  are quoted from SAFE's own surfaces; nothing here is inferred from marketing copy.
+standards:
+- id: cvss
+  name: Common Vulnerability Scoring System 3.1
+  conforms: true
+  domain_standard: true
+  evidence:
+    location: Signal specification, securityContext.severity.cvss
+    fields: [version, baseScore, vector]
+    example: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H'
+    file: examples/safe-security-signal-high-quality-va-signal.json
+    also: Balbix responses carry cvss_score and cvss_severity on both asset and application vulnerabilities
+  note: >-
+    The contract carries a real, parseable CVSS v3.1 vector string plus the base score, not
+    just a severity word. A consumer that already speaks CVSS can rescore SAFE's findings
+    against its own environmental metrics without a bespoke connector.
+- id: cve
+  name: Common Vulnerabilities and Exposures
+  conforms: true
+  domain_standard: true
+  evidence:
+    location: Signal specification, securityContext.standardsMapping[]
+    example: '{"name": "cve", "value": "CVE-2022-35411"}'
+    file: examples/safe-security-signal-high-quality-va-signal.json
+    also: Balbix vulnerability objects carry cve_id and vuln_type "CVE"; vuln_name holds the CVE identifier
+  note: >-
+    standardsMapping[] is an OPEN name/value list, so CVE is the demonstrated case rather
+    than the only permitted one - the same slot carries any identifier scheme a connector
+    emits.
+- id: mitre-attack
+  name: MITRE ATT&CK
+  conforms: true
+  domain_standard: true
+  evidence:
+    location: Signal specification, securityContext.attackPattern[]
+    fields: [name, sourceName, mapping.techniqueName, mapping.techniqueId]
+    example: '{"sourceName": "ATT&CK", "mapping": {"techniqueId": "T1586", "techniqueName": "Compromise Accounts"}}'
+    file: examples/safe-security-signal-high-quality-va-signal.json
+    also: 'Balbix vulnerability objects carry attck[] in tactic<-->technique form, e.g. "TA0040<-->T1499", plus mitre_attck_id'
+  note: >-
+    Technique IDs are carried structurally on both surfaces. Balbix additionally encodes
+    the TACTIC, which the Signal specification does not - the two SAFE surfaces are not
+    equally expressive about ATT&CK.
+- id: cpe
+  name: Common Platform Enumeration 2.3
+  conforms: true
+  domain_standard: true
+  evidence:
+    location: Signal specification, securityContext.tags.configuration[]
+    example: 'cpe:2.3:a:rpc.py_project:rpc.py:*:*:*:*:*:*:*:*'
+    file: examples/safe-security-signal-high-quality-va-signal.json
+    also: Balbix vulnerability objects carry a cpe field
+  note: >-
+    CPE rides in a free-form tag list rather than in a dedicated typed field, so a consumer
+    must sniff the "cpe:2.3:" prefix rather than read a declared slot.
+- id: cwe
+  name: Common Weakness Enumeration
+  conforms: true
+  domain_standard: true
+  evidence:
+    location: Balbix REST API responses
+    fields: [cwe_id, cwe_ids]
+    source: https://docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20
+  note: Present on the Balbix surface only; the Signal specification has no dedicated CWE field.
+- id: fair
+  name: FAIR (Factor Analysis of Information Risk)
+  conforms: true
+  domain_standard: true
+  evidence:
+    location: Signal specification, entity.entityAttributes
+    fields: [criticality, confidentialityRequirement, integrityRequirement, availabilityRequirement]
+    file: examples/safe-security-signal-high-quality-va-signal.json
+    also: 'SAFE''s Security Statement and site position the whole platform on FAIR, FAIR-MAM, FAIR-CAM and FAIR-TAM; controls are exposed in-product as FAIR-CAM controls'
+  note: >-
+    FAIR is the quantification standard SAFE's entire product is built on, and the
+    contract reflects it: the C/I/A requirement triple a connector must supply is the
+    FAIR/CVSS environmental input. This is the domain standard for cyber risk
+    quantification and SAFE is one of its principal implementers.
+- id: owasp-top-10
+  name: OWASP Top 10
+  conforms: true
+  domain_standard: false
+  evidence:
+    location: Balbix vulnerability tagging vocabulary
+    example: 'CVE tag values include "OWASP Top 10", "CISA Known Exploit", "Known Exploit", "Exploit Kit Available", "Malware Linked", "Ransomware Linked"'
+    source: https://docs.safe.security/balbixhelp/docs/release-notes-june-2026
+- id: nist-csf
+  name: NIST Cybersecurity Framework
+  conforms: true
+  domain_standard: false
+  evidence:
+    location: Product surface - NIST CSF assessment and questionnaire upload are documented SAFE One features
+    source: https://docs.safe.security/docs/nist-csf-assessment-instructions
+  note: A product capability rather than a contract declaration; no NIST CSF identifier appears in a published payload.
+- id: oauth2
+  conforms: false
+  evidence: 'No OAuth 2.0 is used for API authentication on either surface. SAFE One uses HTTP Basic to mint a bearer token; Balbix uses HTTP Basic plus a customer key. See authentication/safe-security-authentication.yml.'
+- id: oidc
+  conforms: false
+  evidence: >-
+    OIDC/SAML SSO is supported for HUMAN sign-in to the SAFE application (Microsoft Entra
+    ID, Okta, AD FS, Duo, OneLogin) but not for API access, and no
+    /.well-known/openid-configuration is served on any SAFE host - every probe returned
+    404 or 403 (see well-known/safe-security-well-known.yml).
+- id: rfc9457
+  conforms: false
+  evidence: 'No application/problem+json anywhere; four inconsistent proprietary JSON error envelopes. See errors/safe-security-problem-types.yml.'
+- id: rfc8594
+  conforms: false
+  evidence: No Sunset or Deprecation response headers documented.
+- id: rfc9116
+  conforms: false
+  evidence: >-
+    No /.well-known/security.txt is served. safe.security answers that path with the
+    WordPress homepage shell (soft 404) and the safeone.ai hosts answer with CloudFront
+    AccessDenied. SAFE does publish a vulnerability-report address, but on its Security
+    Statement page rather than at the RFC 9116 path.
+- id: pagination
+  conforms: true
+  evidence: >-
+    Both surfaces paginate, but with DIFFERENT vocabularies - SAFE One uses
+    page/pagelen/size/next/previous/values, Balbix uses page_offset/page_limit with
+    meta.total_count. See conventions/safe-security-conventions.yml.
+- id: idempotency
+  conforms: false
+  evidence: No idempotency key or replay-safety guarantee is documented on either surface.
+- id: scim
+  conforms: false
+  evidence: >-
+    SAFE exposes GET /api/v3/users for user enumeration and supports SSO, but publishes no
+    SCIM 2.0 schema URN, no /scim/v2 surface and no SCIM provisioning documentation - the
+    obvious domain standard for the identity half of this product, and it is absent.
+- id: stix-taxii
+  conforms: false
+  evidence: >-
+    SAFE ingests and emits threat intelligence (VulnCheck, CISA KEV, exploit tagging) but
+    publishes no STIX object shapes and no TAXII endpoint; the Signal specification is
+    SAFE's own JSON contract rather than a STIX profile.
+- id: ocsf
+  conforms: false
+  evidence: >-
+    The Signal specification occupies exactly the niche OCSF was created for - a normalised
+    JSON schema for security findings across CA/VA/EDR/UBA sources - but SAFE defines its
+    own vocabulary (Signal, Entity, SecurityContext, Evidence) rather than adopting OCSF,
+    and publishes no OCSF mapping. A connector author must learn SAFE's schema
+    specifically. This is the single largest domain-standard gap on the contract.
+compliance:
+  published: true
+  source: https://safe.security/security/
+  certifications:
+  - name: SOC 2 Type 2
+    public_report: false
+  - name: SOC 3
+    public_report: true
+    url: https://safe.security/wp-content/uploads/safe-security-soc3-report-2026.pdf
+    http_status: 200
+    note: The SOC 3 report is downloadable without a form or NDA, which is unusual and worth crediting.
+  - name: ISO 27001:2013
+    public_report: false
+  - name: ISO 9001:2015
+    public_report: false
+  - name: TX-RAMP
+    public_report: false
+  security_statement_pdf: https://safe.security/wp-content/themes/safe/assets/security/security-statement.pdf
+  controls_published:
+    encryption_in_transit: TLS 1.2
+    encryption_at_rest: AES-256 via AWS KMS
+    customer_managed_keys: true
+    hosting: AWS, customer-selected region
+    testing: continuous SAST and DAST, manual pre-release testing, daily infrastructure VA scans
+    vendor_management: 4-tier third-party assessment under a Vendor Management Policy
+  gaps:
+  - No FedRAMP authorization (TX-RAMP is the Texas state programme, not the federal one).
+  - No HIPAA or PCI DSS attestation published, despite healthcare and financial verticals being marketed.
+  - No trust portal - certifications are prose on a marketing page rather than a Vanta/Drata/SafeBase surface with downloadable evidence, apart from the SOC 3.

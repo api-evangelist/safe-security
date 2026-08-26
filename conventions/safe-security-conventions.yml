@@ -1,0 +1,230 @@
+generated: '2026-08-26'
+method: searched
+source: https://docs.safe.security/docs/accessing-safe-apis + https://docs.safe.security/docs/how-to-use-safes-audit-apis + https://docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20
+name: SAFE Security API conventions
+docs:
+- https://docs.safe.security/docs/accessing-safe-apis
+- https://docs.safe.security/docs/how-to-use-safes-audit-apis
+- https://docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20
+note: >-
+  Transcribed from SAFE's own public documentation. SAFE's Swagger reference is served
+  inside the authenticated application and is not retrievable anonymously, so nothing
+  here is derived from a spec; every convention below is stated on a public docs page or
+  demonstrated in a published cURL example. The two surfaces do NOT share conventions:
+  SAFE One (/api/v3 on *.safeone.ai) and Balbix (/apis/v1 on *.balbix.net) differ in
+  auth header, token TTL, pagination vocabulary and response envelope, and an agent must
+  treat them as two APIs rather than one.
+media_type:
+  request: application/json
+  response: application/json
+  note: 'FAQ, Accessing SAFE APIs: "All API data is structured using JSON for both Request and Response objects."'
+auth_style:
+  summary: Two-step exchange; no OAuth, no scopes
+  safe_one:
+    bootstrap: HTTP Basic (API username + API password from Settings > API Credentials)
+    token_endpoint: POST /api/v3/auth
+    resource_header: 'Authorization: Bearer {accessToken}'
+    ttl: 1h
+  balbix:
+    bootstrap: HTTP Basic + customer key as a query parameter
+    token_endpoint: POST /apis/v1/gen_token?key={customerKey}
+    resource_headers:
+    - 'Authorization: {accessToken}'
+    - 'Client-API-Key: {clientApiKey}'
+    ttl: 30m
+    note: >-
+      Balbix sends the session token BARE in Authorization with no Bearer prefix, and
+      requires a second Client-API-Key header identifying the tenant. Copying the SAFE
+      One calling convention onto Balbix will fail.
+  see: authentication/safe-security-authentication.yml
+versioning:
+  style: uri-path
+  current:
+    safe_one: v3
+    balbix: v1
+  example: /api/v3/assets
+  source: 'FAQ, Accessing SAFE APIs: "The API versioning is done using versions API endpoints for, e.g., /api/v3/assets."'
+  no_header_negotiation: true
+  no_date_pinning: true
+pagination:
+  safe_one:
+    style: page-number
+    request_params:
+    - page
+    - pagelen
+    - searchKey
+    default_page_size: 10
+    response_fields:
+    - page
+    - pagelen
+    - size
+    - next
+    - previous
+    - values
+    hateoas: true
+    note: >-
+      next/previous carry absolute hyperlinks to the adjacent page and are null at the
+      ends. Collection items live under values[], not data[].
+    source: https://docs.safe.security/docs/how-to-use-safes-audit-apis
+  balbix:
+    style: offset-limit
+    request_params:
+    - page_offset
+    - page_limit
+    response_fields:
+    - data
+    - meta.total_count
+    - meta.page_limit
+    - meta.page_offset
+    - meta.filters
+    - meta.sort
+    hateoas: false
+    max_page_size:
+      vulnerabilities: 1000
+      misconfigurations: 100
+      artifacts: 100
+      infra_assets: 100
+      asset_details: null
+    note: >-
+      Page-size ceilings are per endpoint and are stated in the guide. asset_details
+      implements no pagination because a single result is expected.
+    source: https://docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20
+error_envelope:
+  documented: true
+  rfc9457: false
+  shapes:
+  - fields: [status, message]
+    example: '{"status": "error", "message": "invalid authorization header!"}'
+    seen_on: SAFE One 401
+  - fields: [Message]
+    example: '{"Message": "User is not authorized to access this resource with an explicit deny"}'
+    seen_on: SAFE One 403
+    note: Capital-M Message - this is the AWS API Gateway authorizer envelope, not SAFE's own
+  - fields: [success, message]
+    example: '{"success": false, "message": "Report not found for report id:1eebc0b2-..."}'
+    seen_on: SAFE One 400
+  - fields: [message]
+    example: '{"message": "Unauthorized"}'
+    seen_on: SAFE One 401 on POST /api/v3/reports
+  inconsistency_note: >-
+    SAFE publishes FOUR different error envelopes across three documented operations and
+    they disagree on both the key name and its capitalisation - status/message,
+    Message, success/message, and bare message. An agent cannot parse SAFE errors with a
+    single accessor; it must probe for all four keys. There is no machine-readable error
+    code field anywhere, only human prose.
+  see: errors/safe-security-problem-types.yml
+success_envelope:
+  documented: true
+  shape: '{"success": true, "message": "...", "data": {...}}'
+  seen_on: POST /api/v3/reports (202), GET /api/v3/reports/{uuid} (200)
+  note: >-
+    GET /api/v3/users does NOT use this envelope - it returns the pagination object at
+    the top level with no success/data wrapper. The envelope is per-operation, not global.
+idempotency:
+  supported: false
+  header: null
+  scope: null
+  retention: null
+  note: >-
+    No idempotency key, no request-deduplication header and no replay-safety guarantee is
+    documented on either surface. The write operations SAFE does expose are all
+    job-creating (POST /api/v3/reports, POST /api/v3/audit-logs/export) or ingestion
+    (POST /api/v3/signals): retrying a report request queues a SECOND report and returns a
+    SECOND uuid, and re-posting a Signal document re-ingests it. The Signal specification
+    does carry a caller-supplied top-level `id` (a UUID) plus `source.name`, which is the
+    closest thing to a dedupe key SAFE publishes, but no documentation states that SAFE
+    dedupes on it, so an agent must not rely on it as one.
+  evidence:
+  - url: https://docs.safe.security/docs/how-to-use-safes-audit-apis
+    status: 200
+  - url: https://github.com/Safe-Security/signal/blob/main/examples/samples/high-quality-va-signal.json
+    status: 200
+dry_run_mode:
+  supported: false
+  note: No test/preview/validate mode is documented on either surface.
+reversibility:
+  grade: na
+  applies: false
+  write_surface: minimal
+  operations:
+  - operation: POST /api/v3/reports
+    reversal: none
+    window: null
+    note: >-
+      Queues an asynchronous report/export job. No cancel, delete or abort operation is
+      documented. The job is not destructive - it produces a downloadable artefact - so
+      there is nothing to take back, but there is also no way to stop one once queued.
+  - operation: POST /api/v3/audit-logs/export
+    reversal: none
+    window: null
+    note: Same shape as POST /api/v3/reports; no cancel operation documented.
+  - operation: POST /api/v3/signals
+    reversal: none
+    window: null
+    note: >-
+      Ingests a security signal into the tenant's risk model. No delete-signal or
+      retract-signal operation appears in the public docs or in the MIT-licensed Signal
+      repository, whose ApiEndpoints constants define only /api/v3/auth, /api/v3/signals
+      and /api/v3/signals/zip. Signals decay by the submitter re-sending on the interval
+      declared in source.nextSubmissionIntervalInMins rather than by being withdrawn.
+  - operation: Balbix /apis/v1/*
+    reversal: na
+    window: null
+    note: >-
+      Balbix's API is explicitly read-only - "it is not possible to modify assets,
+      interact with the UI, upload data, or modify tags via the API" - so reversibility
+      does not apply to that surface at all.
+  note: >-
+    Graded `na` rather than `documented`: SAFE's public API surface is overwhelmingly
+    read/export, its only true write is Signal ingestion, and NO reversal operation and NO
+    window is stated anywhere in the public documentation. Recording a window here would
+    require inventing one, which this pipeline does not do. If SAFE publishes a
+    signal-retraction or report-cancellation operation this should be re-graded.
+  evidence:
+  - url: https://docs.safe.security/balbixhelp/docs/balbix-rest-api-guide-v20
+    status: 200
+  - url: https://raw.githubusercontent.com/Safe-Security/signal/main/csharp/src/Signals.Library/Constants/ApiEndpoints.cs
+    status: 200
+rate_limit_signaling:
+  documented_limit: 1200 requests/min (SAFE One)
+  response_headers: []
+  note: >-
+    No X-RateLimit-*, RateLimit-* or Retry-After header is documented. Balbix states it
+    has "no hard-coded rate limits" but caps concurrency at 4 sessions per customer, and
+    SAFE "reserves the right to limit traffic for audit logs if there is excessive usage"
+    - a discretionary throttle with no published signal.
+  see: rate-limits/safe-security-rate-limits.yml
+request_id_tracing:
+  supported: false
+  note: No request-id / correlation-id header is documented on either surface.
+field_expansion:
+  supported: false
+  sparse_fields: false
+  note: >-
+    No expand/fields/include parameter is documented. Balbix's asset_list accepts
+    host_name, ip and mac as combinable search criteria and SAFE One's /users accepts a
+    single opaque searchKey; neither is a field-selection mechanism.
+metadata_fields:
+  supported: true
+  note: >-
+    Both surfaces carry free-form tag maps. The Signal specification defines nested tag
+    dictionaries at three levels (top-level tags, entity.entityAttributes.tags,
+    securityContext.tags) keyed by dimension - location, dept, os, application, port,
+    resource, configuration. Balbix returns device_tags[] and vuln_tags[]. Balbix's API
+    cannot WRITE tags ("it is not possible to ... modify tags via the API").
+async_pattern:
+  style: queue-and-poll
+  note: >-
+    Reports and audit-log exports are asynchronous: POST returns 202 with a uuid, and a
+    subsequent GET returns a pre-signed download URL. The pre-signed URL expires in five
+    minutes - "Please download the report from the provided URL. The link will expire in
+    5 minutes." No callback, webhook or polling-interval guidance is published, so an
+    agent must invent its own retry cadence.
+  see: lifecycle/safe-security-lifecycle.yml
+cross_links:
+  authentication: authentication/safe-security-authentication.yml
+  errors: errors/safe-security-problem-types.yml
+  lifecycle: lifecycle/safe-security-lifecycle.yml
+  rate_limits: rate-limits/safe-security-rate-limits.yml
+  data_model: data-model/safe-security-data-model.yml
+  conformance: conformance/safe-security-conformance.yml
