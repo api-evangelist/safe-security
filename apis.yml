@@ -10,6 +10,17 @@ description: 'SAFE Security (SAFE, formerly Lucideus) is a Palo Alto based cyber
   programmatically, while an open-source Signal specification (MIT, github.com/Safe-Security/signal)
   defines the JSON contract for pushing CA, VA, EDR and UBA security signals into
   SAFE from any tool. SAFE acquired RiskLens in 2023 and Balbix in 2025.'
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://safe.security/wp-content/uploads/safe-social.jpg
 url: https://raw.githubusercontent.com/api-evangelist/safe-security/refs/heads/main/apis.yml
 x-type: company
