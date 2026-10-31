@@ -64,5 +64,129 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-SAFE Security is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://forgeglobal.com/safe-security_stock/
+SAFE Security (SAFE, formerly Lucideus) is a Palo Alto based cyber risk management company whose SAFE One platform quantifies cyber risk in financial terms on the FAIR standard, unifying Cyber Risk Quantification (CRQ), Third-Party Risk Management (TPRM), Continuous Threat Exposure Management (CTEM) and AI Security Posture Management (AI-SPM). The platform is API-first: a versioned REST API at /api/v3 on a per-tenant safeone.ai host lets customers pull users, assets, findings, risk scenarios, reports and audit logs, and drive the 50+ product integrations programmatically, while an open-source Signal specification (MIT, github.com/Safe-Security/signal) defines the JSON contract for pushing CA, VA, EDR and UBA security signals into SAFE from any tool. SAFE acquired RiskLens in 2023 and Balbix in 2025.
+
+**Areas:** Company · Security · Cyber Risk Quantification · Third-Party Risk Management · Continuous Threat Exposure Management · AI Security Posture Management · Risk Management · Governance Risk and Compliance · FAIR · Vulnerability Management
+
+## SAFE Security on APIs.io
+
+Everything profiled for SAFE Security is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/safe-security/](https://apis.io/providers/safe-security/)** — or go straight to one of the APIs or properties below.
+
+### APIs (2)
+
+- [SAFE REST API](https://apis.io/apis/safe-security/safe-rest-api/) — The SAFE REST API (v3) gives customers and partners programmatic access to the SAFE One platform: users, assets/technology, findings, risk scenarios,…
+- [Balbix REST API](https://apis.io/apis/safe-security/balbix-rest-api/) — The Balbix REST API (v1) gives programmatic read access to the asset, vulnerability, misconfiguration, software-inventory and application inventory Balbix…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [SAFE Security MCP server](https://apis.io/servers/safe-security/safe-security-mcp-server/)
+
+#### Examples (7)
+
+Example requests and responses.
+
+- [Safe Security Signal High Quality Ca Signal](https://apis.io/examples/safe-security/safe-security-signal-high-quality-ca-signal/)
+- [Safe Security Signal High Quality Edr Signal](https://apis.io/examples/safe-security/safe-security-signal-high-quality-edr-signal/)
+- [Safe Security Signal High Quality Uba Signal](https://apis.io/examples/safe-security/safe-security-signal-high-quality-uba-signal/)
+- [Safe Security Signal Simple Ca Signal](https://apis.io/examples/safe-security/safe-security-signal-simple-ca-signal/)
+- [Safe Security Signal Simple Edr Signal](https://apis.io/examples/safe-security/safe-security-signal-simple-edr-signal/)
+- [Safe Security Signal Simple Uba Signal](https://apis.io/examples/safe-security/safe-security-signal-simple-uba-signal/)
+- [Safe Security Signal Simple Va Signal](https://apis.io/examples/safe-security/safe-security-signal-simple-va-signal/)
+
+#### Security (4)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Safe Security Authentication](https://apis.io/security/safe-security/safe-security-authentication/)
+- [Safe Security Domain Security](https://apis.io/security/safe-security/safe-security-domain-security/)
+- [Safe Security Trust Center](https://apis.io/security/safe-security/safe-security-trust-center/)
+- [Safe Security Vulnerability Disclosure](https://apis.io/security/safe-security/safe-security-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Safe Security Plans Pricing](https://apis.io/plans/safe-security/safe-security-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Safe Security Rate Limits](https://apis.io/rate-limits/safe-security/safe-security-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://safe.security/)
+- [Documentation](https://docs.safe.security/)
+- [Getting started](https://github.com/Safe-Security/signal/blob/main/developer-guide.md)
+- [API reference](https://docs.safe.security/docs/accessing-safe-apis)
+- [Sign up](https://us.safeone.ai/)
+- [Support](https://docs.safe.security/docs/support-and-maintenance)
+- [Blog](https://safe.security/resources/blog/)
+- [Security](https://safe.security/security/)
+- [Terms of service](https://safe.security/terms-of-service/)
+- [Privacy policy](https://safe.security/privacy-policy/)
+- [GitHub](https://github.com/Safe-Security)
+
+## API Evangelist rating
+
+**Kin Score 41.0** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 6.5 |
+| Contract governance | 18.2 |
+| Operational transparency | 65.8 |
+| Developer ergonomics | 54.8 |
+| Access clarity | 36.8 |
+
+**Agent readiness 9.2** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | — |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | documented (partial credit) |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | na |
+
+**Regulatory alignment 35.3** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/safe-security/](https://apis.io/providers/safe-security/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for SAFE Security: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/safe-security/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
